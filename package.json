@@ -35,6 +35,7 @@
     "imagesloaded": "4.1.4",
     "lodash": "4.17.15",
     "natural-scroll": "0.2.2",
+    "pannellum": "^2.5.5",
     "vue": "2.6.10",
     "vue-flickity": "1.2.1",
     "vue-zoomer": "homeday-de/vue-zoomer#0.4.0"
