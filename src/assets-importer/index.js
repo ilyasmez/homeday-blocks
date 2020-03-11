@@ -50,12 +50,20 @@ async function importAssetsFromFigma({
   format,
   dist,
   filenameRegex,
+  shouldMatchRegex,
 }) {
   const file = await fetchFromFigma(`/files/${fileKey}/components`);
+
+  if (!file.meta.components || file.meta.components.length === 0) {
+    console.warn('No components found for file', fileKey);
+    return;
+  }
+
   const filenameMap = file.meta.components
     .reduce((map, component) => {
-      const filename = normalizeFilename({ name: component.name, regex: filenameRegex });
-      if (filename) {
+      const isMatch = Array.isArray(component.name.match(shouldMatchRegex));
+      if (isMatch) {
+        const filename = normalizeFilename({ name: component.name, regex: filenameRegex });
         map[component.node_id] = filename;
       }
 
@@ -66,6 +74,11 @@ async function importAssetsFromFigma({
 
   const ids = Object.keys(filenameMap).join(',');
   const assets = await fetchFromFigma(`/images/${fileKey}?ids=${ids}&format=${format}`);
+
+  if (assets.images === undefined) {
+    console.warn('No images found for regexp', shouldMatchRegex);
+    return;
+  }
 
   await Promise.all(
     Object.entries(assets.images)
@@ -81,5 +94,6 @@ CONFIG.FIGMA_FILES.forEach(FIGMA_FILE => importAssetsFromFigma({
   fileKey: FIGMA_FILE.KEY,
   format: FIGMA_FILE.FORMAT,
   filenameRegex: FIGMA_FILE.FILENAME_REGEX,
+  shouldMatchRegex: FIGMA_FILE.SHOULD_MATCH_REGEX,
   dist: FIGMA_FILE.DIST,
 }));
