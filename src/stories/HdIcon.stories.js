@@ -1,14 +1,14 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { storiesOf } from '@storybook/vue';
 import { HdIcon } from 'homeday-blocks';
-import bigIcon from 'homeday-blocks/src/assets/big-icons/ic_apartment.svg';
+import { apartmentFloorIcon as bigIcon } from 'homeday-blocks/src/assets/big-icons';
 import multiColorIcon from './assets/ic_multi-color.svg';
 import multiColorIconWithClasses from './assets/ic_multi-color--with-classes.svg';
 import classFromFillNote from '../notes/HdIconClassFromFill.md';
 import fillFromClassNote from '../notes/HdIconFillFromClass.md';
 import './styles/HdIcon.css';
 
-storiesOf('HdIcon', module)
+storiesOf('Components|HdIcon', module)
   .add('simple', () => ({
     components: { HdIcon },
     data() {

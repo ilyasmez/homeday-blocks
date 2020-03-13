@@ -2,6 +2,7 @@
 require('dotenv').config();
 const fs = require('fs');
 const fetch = require('node-fetch');
+const _camelCase = require('lodash/camelCase');
 const CONFIG = require('./CONFIG');
 
 if (process.env.FIGMA_ACCESS_TOKEN === undefined) {
@@ -39,7 +40,7 @@ async function download({
   response.body.pipe(writer);
 
   return new Promise((resolve, reject) => {
-    writer.on('finish', resolve);
+    writer.on('finish', resolve(filename));
     writer.on('error', reject);
   });
 }
@@ -79,7 +80,7 @@ async function importAssetsFromFigma({
     return;
   }
 
-  await Promise.all(
+  const downloadedFiles = await Promise.all(
     Object.entries(assets.images)
       .map(([id, url]) => url && download({
         url,
@@ -87,6 +88,32 @@ async function importAssetsFromFigma({
         dist,
       })),
   );
+
+  createIndex({
+    files: downloadedFiles,
+    dist,
+    exportNameRegex: new RegExp(`ic_(.*).${format}`),
+    suffix: 'Icon',
+  });
+}
+
+function createIndex({ files, dist, exportNameRegex = '*', suffix = '' }) {
+  const fileContent = [...new Set(files)]
+    .reduce ((content, file) => {
+      const nameMatches = file.match(exportNameRegex);
+      if (!nameMatches) {
+        return content;
+      }
+
+      const exportName = _camelCase(nameMatches.pop()) + suffix;
+      return `${content}\nexport { default as ${exportName} } from './${file}';\n`;
+    }, '');
+
+  console.log('fileContent', fileContent);
+
+  fs.writeFile(`${process.cwd()}${dist}/index.js`, fileContent, (err) => {
+    if (err) console.error('Failed to create index', err);
+  });
 }
 
 CONFIG.FIGMA_FILES.forEach(FIGMA_FILE => importAssetsFromFigma({
