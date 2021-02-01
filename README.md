@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/homeday-de/homeday-blocks/badge.svg?t=Kbz7Vb)](https://coveralls.io/github/homeday-de/homeday-blocks)
 [![This project is using Percy.io for visual regression testing.](https://percy.io/static/images/percy-badge.svg)](https://percy.io/Homeday/homeday-blocks)
 
-# Homeday Blocks
+# Homeday Blocks Test
 A library of Vue components used across Homeday projects - [here](https://blocks.homeday.dev)
 
 ## Local setup
